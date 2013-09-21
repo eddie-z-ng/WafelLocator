@@ -286,7 +286,7 @@ var PlotterModule = {
                     var startAddress = lat.toString() + ', ' + long.toString();
                     $('#startLocation').val(startAddress);
 
-                    initialLocation = new google.maps.LatLng(lat, long);
+                    var initialLocation = new google.maps.LatLng(lat, long);
                     console.log("Setting current position based on geolocator " + initialLocation);
                     PlotterModule.map.setCenter(initialLocation);
                 }, function (error) {
