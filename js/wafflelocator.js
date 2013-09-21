@@ -265,6 +265,10 @@ var PlotterModule = {
             if (errorFlag === true) {
                 console.log("Geolocation service failed.");
                 initialLocation = newYork;
+                /*var lat = 40.7711329;
+                var long = -73.9741874;
+                var startAddress = lat.toString() + ', ' + long.toString();  */
+                $('#startLocation').val(startAddress);
             } else {
                 console.log("Your browser doesn't support geolocation.");
                 initialLocation = manhattan;
@@ -277,8 +281,13 @@ var PlotterModule = {
         if (navigator.geolocation) {
             browserSupportFlag = true;
             navigator.geolocation.getCurrentPosition(function (position) {
-                    console.log("Setting current position based on geolocator");
-                    initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                    var lat = position.coords.latitude;
+                    var long = position.coords.longitude;
+                    var startAddress = lat.toString() + ', ' + long.toString();
+                    $('#startLocation').val(startAddress);
+
+                    initialLocation = new google.maps.LatLng(lat, long);
+                    console.log("Setting current position based on geolocator " + initialLocation);
                     PlotterModule.map.setCenter(initialLocation);
                 }, function (error) {
                     console.log(error);
