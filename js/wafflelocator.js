@@ -288,7 +288,7 @@ var PlotterModule = {
 
                     var initialLocation = new google.maps.LatLng(lat, long);
                     console.log("Setting current position based on geolocator " + initialLocation);
-                    PlotterModule.map.setCenter(initialLocation);
+                    //PlotterModule.map.setCenter(initialLocation);
                 }, function (error) {
                     console.log(error);
                     handleNoGeolocation(browserSupportFlag);
@@ -467,6 +467,36 @@ $(function () {
 
     $('input[type=submit]').button();
     $('input[type=button]').button();
+
+    if (navigator.geolocation) {
+        $('#currentLocator').click(function() {
+            $('#alertGroup').hide();
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var lat = position.coords.latitude;
+                var long = position.coords.longitude;
+                var startAddress = lat.toString() + ', ' + long.toString();
+                $('#startLocation').val(startAddress);
+
+                var initialLocation = new google.maps.LatLng(lat, long);
+                console.log("Setting current position based on geolocator " + initialLocation);
+
+                }, function (error) {
+                    //console.log(error);
+                    var errorDict = {
+                        1: 'Permission denied',
+                        2: 'Position unavailable',
+                        3: 'Request timeout'
+                    };
+
+                    $('#alertMessage').text("Failed to get current location: " + errorDict[error.code]);
+                    $('#alertGroup').show();
+                },
+                { timeout: 5000 });
+        });
+    }
+    else {
+        $('#currentLocator').hide();
+    }
 
     // Datepicker
     $('#date').datepicker({
