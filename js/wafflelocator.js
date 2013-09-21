@@ -94,23 +94,23 @@ var WaffleLocatorModule = {
                     WaffleLocatorModule.parseWDJSON(jsonData);
                     WaffleLocatorModule.saveWaffleInfo();
 
-                    console.log("Publishing dataParsed...");
-                    console.log(WaffleLocatorModule.allPlacesArray);
+                    //console.log("Publishing dataParsed...");
+                    //console.log(WaffleLocatorModule.allPlacesArray);
                     $.publish("dataParsed", WaffleLocatorModule.allPlacesArray);
 
                 } else {
-                    console.log("Could not get waffle truck data (GET)!");
+                    //console.log("Could not get waffle truck data (GET)!");
                     // use cached data if it exists
                 }
             } else {
-                console.log("Could not get waffle truck data (GET-from YQL)!");
+                //console.log("Could not get waffle truck data (GET-from YQL)!");
                 // use cached data if it exists
             }
         });
     },
 
     postWDData: function(selDate, selTime, selLocType) {
-        console.log("Doing an HTTP POST to get data for selected date, time, and location types");
+        //console.log("Doing an HTTP POST to get data for selected date, time, and location types");
         // selectedTruck -> 0 = all, 1 = trucks, 2 = carts, 3 = stores
         // selectedTme -> 5 = morning, >5 = evening
         // selectedDate -> date string
@@ -137,22 +137,22 @@ var WaffleLocatorModule = {
         //var realURL = "select * from json where url='http://www.wafelsanddinges.com/trucks/searchtrucks.php?date=Today&time=5&truck_id=0&truckaddress='";
 
         $.YQL(fullURL, function (data) {
-            console.log(data);
+            //console.log(data);
             if (data.query.count) {
                 var jsonData = data.query.results.postresult.json;
                 if (jsonData.MSG === 'OK') {
                     WaffleLocatorModule.parseWDJSON(jsonData);
 
-                    console.log("Publishing dataParsed...");
-                    console.log(WaffleLocatorModule.allPlacesArray);
+                    //console.log("Publishing dataParsed...");
+                    //console.log(WaffleLocatorModule.allPlacesArray);
                     $.publish("dataParsed", WaffleLocatorModule.allPlacesArray);
 
                 } else {
-                    console.log("Could not get waffle truck data (POST)!");
+                    //console.log("Could not get waffle truck data (POST)!");
                     // use cached data if it exists
                 }
             } else {
-                console.log("Could not get waffle truck data (POST-from YQL)!");
+                //console.log("Could not get waffle truck data (POST-from YQL)!");
                 // use cached data if it exists
             }
         });
@@ -201,7 +201,7 @@ var WaffleLocatorModule = {
                     hours: testDayHours
                 };
 
-                console.log(spec);
+                //console.log(spec);
                 WaffleLocatorModule.makeWafflePlace(spec);
             }
         }
@@ -262,7 +262,7 @@ var PlotterModule = {
 
         function handleNoGeolocation(errorFlag) {
             var initialLocation;
-            if (errorFlag == true) {
+            if (errorFlag === true) {
                 console.log("Geolocation service failed.");
                 initialLocation = newYork;
             } else {
@@ -277,8 +277,9 @@ var PlotterModule = {
         if (navigator.geolocation) {
             browserSupportFlag = true;
             navigator.geolocation.getCurrentPosition(function (position) {
+                    console.log("Setting current position based on geolocator");
                     initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                    this.map.setCenter(initialLocation);
+                    PlotterModule.map.setCenter(initialLocation);
                 }, function (error) {
                     console.log(error);
                     handleNoGeolocation(browserSupportFlag);
@@ -312,7 +313,7 @@ var PlotterModule = {
 
         this.directionsService.route(request, function (response, status) {
             if (status == google.maps.DirectionsStatus.OK) {
-                console.log(response);
+                //console.log(response);
                 PlotterModule.directionsDisplay.setDirections(response);
                 // If we have selected a marker, extend the map to cover it
                 if (PlotterModule.currentBounds) {
@@ -355,10 +356,10 @@ var PlotterModule = {
                     PlotterModule.map.setCenter(results[0].geometry.location);
 
                     if (!specs.name) {
-                        console.log("Current spec has no name, placeIndex: " + specs.placeIndex);
+                        //console.log("Current spec has no name, placeIndex: " + specs.placeIndex);
                     } else {
                         var cont = specs.name + ", " + specs.address + ", " + specs.hours;
-                        console.log(specs);
+                        //console.log(specs);
                         var infowindow = new google.maps.InfoWindow({
                             content: cont
                         });
@@ -377,7 +378,7 @@ var PlotterModule = {
 
                         PlotterModule.markerArray.push(marker);
                         placesArray[specs.placeIndex].markerIndex = PlotterModule.markerArray.length - 1;
-                        console.log("Adding marker index " + (PlotterModule.markerArray.length - 1) + "for place " + specs.placeIndex) ;
+                        //console.log("Adding marker index " + (PlotterModule.markerArray.length - 1) + "for place " + specs.placeIndex) ;
 
                         var openWindow = function () {
                             var infoBox = new google.maps.InfoWindow({
@@ -392,7 +393,7 @@ var PlotterModule = {
                         google.maps.event.addListener(marker, 'click', function (data) {
                             openWindow();
                             if (typeof data === 'string' && data === 'suppress') {
-                                console.log("Not updating place info");
+                                //console.log("Not updating place info");
                             } else {
                                 PlotterModule.updateSelectedPlaceInfo(specs.placeIndex, placesArray);
                             }
@@ -410,7 +411,7 @@ var PlotterModule = {
         var placeHours = placesArray[selectedIndex].get_hours();
         $('#infoBlock').html('<div style="margin-left:12px;margin-top: -32px;"><br><br><font style="font-family: WhitneyB; color: #c4a065; font-size: 18px; font-weight: 100;"><b>' + placeName + '</b></font><br><font style="font-family:Whitney-Book; font-size: 14px; color: #173641;">' + placeHours + '</font></div>');
 
-        console.log("Selected marker index: " + selectedMarkerIndex);
+        //console.log("Selected marker index: " + selectedMarkerIndex);
         if (selectedMarkerIndex || selectedMarkerIndex === 0) {
             var selectedMarker = this.markerArray[selectedMarkerIndex];
             var markerPos = selectedMarker.getPosition();
@@ -420,10 +421,10 @@ var PlotterModule = {
             new google.maps.event.trigger(selectedMarker, 'click', 'suppress');
             this.map.setCenter(markerPos);
             this.map.setZoom(15);
-            console.log(selectedMarker.getTitle());
+            //console.log(selectedMarker.getTitle());
             this.selectedDestination = placesArray[selectedIndex].get_address();
 
-            console.log("Setting end location to " + this.selectedDestination);
+            //console.log("Setting end location to " + this.selectedDestination);
             $('#endLocation').val(this.selectedDestination);
         }
     }
@@ -493,13 +494,13 @@ $(function () {
 
     PlotterModule.initialize();
     $.subscribe("dataParsed", function(event) {
-        console.log("EVENT CAUGHT");
+        //console.log("EVENT CAUGHT");
         var locations = Array.prototype.slice.call(arguments, 1);
-        console.log(locations);
+        //console.log(locations);
         PlotterModule.showAllTruckMarkers(locations);
         PlotterModule.updateSelectedPlaceInfo(0, WaffleLocatorModule.allPlacesArray);
 
-        console.log(WaffleLocatorModule.dateString);
+        //console.log(WaffleLocatorModule.dateString);
         if (WaffleLocatorModule.dateString) {
             $('#locData').text("LOCATIONS FOR " + WaffleLocatorModule.dateString);
         }
@@ -523,7 +524,7 @@ $(function () {
         var selectVal = $('#cartSelect :selected').val();
         PlotterModule.updateSelectedPlaceInfo(selectVal, WaffleLocatorModule.allPlacesArray);
 
-        console.log("Place name is: " + WaffleLocatorModule.allPlacesArray[selectVal].get_address())
+        //console.log("Place name is: " + WaffleLocatorModule.allPlacesArray[selectVal].get_address())
         if (WaffleLocatorModule.allPlacesArray[selectVal].get_address()) {
             $('#alertGroup').hide();
         }
@@ -549,7 +550,7 @@ $(function () {
         var year1 = $("#date").datepicker('getDate').getFullYear();
         var fullDate = month1 + "/" + day1 + "/" + year1;
 
-        console.log("The selected day is..." + fullDate);
+        //console.log("The selected day is..." + fullDate);
 
         var selectedTime = $('#timeSelect [name="time"]:checked').index();
         if (selectedTime) {
@@ -559,7 +560,7 @@ $(function () {
         {
             selectedTime = "5";
         }
-        console.log("Selected radio button is" + selectedTime);
+        //console.log("Selected radio button is" + selectedTime);
 
         WaffleLocatorModule.dateString = fullDate;
         WaffleLocatorModule.postWDData(fullDate, selectedTime);
@@ -568,7 +569,6 @@ $(function () {
     $('#newDirect').click(function () {
         var origin1 = $('#startLocation').val();
         if(!origin1) {
-            console.log("Enter a start location");
             $('#alertMessage').text("Please enter a start address!");
             $('#alertGroup').show();
             return this;
@@ -578,7 +578,7 @@ $(function () {
         var selectVal = $('#cartSelect :selected').val();
         var destination = WaffleLocatorModule.allPlacesArray[selectVal].get_address();
 
-        console.log("Destination is " + destination);
+        //console.log("Destination is " + destination);
         if (destination) {
             $('#alertGroup').hide();
             if (!$('#endLocation').val()) {
@@ -624,13 +624,13 @@ $(function () {
                 PlotterModule.destinationIndices.push(idx);
             }
         }
-        console.log(destList);
-        console.log(PlotterModule.destinationIndices);
+        //console.log(destList);
+        //console.log(PlotterModule.destinationIndices);
 
         var travelModeSelected = $('#travelSelect').val();
         var travelModeText = $('#travelSelect').children(':selected').text();
         var travelModeDir, travelModeCalc;
-        console.log("travel mode selected is " + travelModeSelected);
+        //console.log("travel mode selected is " + travelModeSelected);
 
         if (travelModeSelected === 'bicycling') {
             travelModeCalc = google.maps.TravelMode.BICYCLING;
@@ -659,14 +659,14 @@ $(function () {
                   avoidHighways: false,
                   avoidTolls: false
               }, function () {
-                  console.log(PlotterModule.destinationIndices);
+                  //console.log(PlotterModule.destinationIndices);
                   // args 0 and 1 are response and status passed in by Google response, respectively
                   return callback(arguments[0], arguments[1], PlotterModule.destinationIndices, travelModeDir, travelModeText);
         });
 
         function callback(response, status, destinationIndices, travelModeDir) {
             if (status == google.maps.DistanceMatrixStatus.OK) {
-                console.log(response);
+                //console.log(response);
                 var origins = response.originAddresses;
                 var destinations = response.destinationAddresses;
 
@@ -683,7 +683,7 @@ $(function () {
                         var from = origins[i];
                         var to = destinations[j];
 
-                        console.log("Destination: " + to + " -- Duration: " + duration + " -- Distance: " + distance);
+                        //console.log("Destination: " + to + " -- Duration: " + duration + " -- Distance: " + distance);
 
                         if (element.duration.value < leastDuration.duration.value) {
                             leastDuration.duration = element.duration;
@@ -699,8 +699,8 @@ $(function () {
                         }
                     }
                 }
-                console.log("Fastest route is [" + WaffleLocatorModule.allPlacesArray[leastDuration.placeIndex].get_name() + "] " + origins[0] + " to " + leastDuration.destination + " DISTANCE: " + leastDuration.distance.text + " DURATION: " + leastDuration.duration.text);
-                console.log("Shortest route is [" + WaffleLocatorModule.allPlacesArray[leastDistance.placeIndex].get_name() + "] " + origins[0] + " to " + leastDistance.destination + " DISTANCE: " + leastDistance.distance.text + " DURATION: " + leastDistance.duration.text);
+                //console.log("Fastest route is [" + WaffleLocatorModule.allPlacesArray[leastDuration.placeIndex].get_name() + "] " + origins[0] + " to " + leastDuration.destination + " DISTANCE: " + leastDuration.distance.text + " DURATION: " + leastDuration.duration.text);
+                //console.log("Shortest route is [" + WaffleLocatorModule.allPlacesArray[leastDistance.placeIndex].get_name() + "] " + origins[0] + " to " + leastDistance.destination + " DISTANCE: " + leastDistance.distance.text + " DURATION: " + leastDistance.duration.text);
 
                 PlotterModule.updateSelectedPlaceInfo(leastDuration.placeIndex, WaffleLocatorModule.allPlacesArray);
                 PlotterModule.calcRoute(origins[0], leastDuration.destination, travelModeDir);
