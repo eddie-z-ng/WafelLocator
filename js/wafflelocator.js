@@ -267,8 +267,8 @@ var PlotterModule = {
                 initialLocation = newYork;
                 /*var lat = 40.7711329;
                 var long = -73.9741874;
-                var startAddress = lat.toString() + ', ' + long.toString();  */
-                $('#startLocation').val(startAddress);
+                var startAddress = lat.toString() + ', ' + long.toString();
+                $('#startLocation').val(startAddress);        */
             } else {
                 console.log("Your browser doesn't support geolocation.");
                 initialLocation = manhattan;
