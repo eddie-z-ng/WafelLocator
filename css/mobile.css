@@ -1,0 +1,101 @@
+body {background: none;}
+body
+{
+    background-color: #fdf9e8;
+    color: #ba1521;
+    font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
+}
+
+h2
+{
+    text-align: center;
+}
+
+.cartBlock
+{
+    display: block;
+    width: 100%;
+}
+
+.cartBlock select
+{
+    width: 100%;
+}
+
+#locData
+{
+    text-align: center;
+}
+
+.locBlock
+{
+    display: block;
+    width: 100%;
+    height: 70px;
+}
+
+.locBlock input[type=search]
+{
+    width: 90%;
+    height: 50%;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.directionChooser
+{
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+#optionsToggle
+{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#selectFrame
+{
+    display: block;
+    width: 100%;
+}
+
+#infoBlock
+{
+    height: 40%;
+}
+
+input[type="search"]
+{
+    width: 30%;
+}
+
+.googleFrame
+{
+    display: block;
+    /*margin-left: 5px;
+    margin-right: 5px;      */
+    width: 100%;
+}
+
+.googleFrame p
+{
+    text-align: center;
+}
+
+#map-canvas
+{
+    width: 90%;
+    margin: 2px auto;
+    height: 400px;
+}
+
+#directionsPanel
+{
+    margin-right: 5px;
+    width: 100%;
+    float: left;
+}
+

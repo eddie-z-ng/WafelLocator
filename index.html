@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Wafel Locator</title>
+    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"></script>
+    <script type="text/javascript" src="js/wafflelocator.js"></script>
+    <link href="css/theme-jquery-ui.min.css" rel="stylesheet">
+    <link media="Screen" href="css/wafflelocator.css" type="text/css" rel="stylesheet" />
+    <link media="handheld, only screen and (max-width: 480px), only screen and (max-device-width: 480px)" href="css/mobile.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+    <h2>Wafels and Dinges Locator</h2>
+    <h4 id="locData">Locations for Today</h4>
+
+    <div class="moreOptionsBlock">
+        <input type="button" id="optionsToggle" value="Show More Options">
+
+        <div id="selectFrame">
+            <div id="date"><p>Selected Date: <input type="text" id="datepicker_value" readonly="true"/></p></div>
+
+            <div id="timeSelect">
+                <input type="radio" id="radio1" name="time" checked="checked"/><label for="radio1">Morning</label>
+                <input type="radio" id="radio2" name="time"/><label for="radio2">Evening</label>
+            </div>
+
+            <input type="submit" id="finder" value="Get new locations"/>
+        </div>
+    </div>
+
+    <div class="cartBlock">
+        <select id="cartSelect"></select>
+        <span id="infoBlock"></span>
+    </div>
+    <div class="locBlock">
+        <input type="search" placeholder="Enter start address" id="startLocation" />
+        <input type="search" placeholder="Destination address" id="endLocation" readonly="true"/>
+    </div>
+    <div class="directionChooser">
+        <span>Get me</span>
+            <select id="travelSelect">
+                <option value="transit">Transit</option>
+                <option value="driving">Driving</option>
+                <option value="bicycling">Bicycling</option>
+                <option value="walking">Walking</option>
+            </select>
+        <span>directions</span>
+
+        <input class="ui-button ui-widget ui-state-default ui-corner-all" type="submit" id="direct" value="To closest place!" />
+        <input class="ui-button ui-widget ui-state-default ui-corner-all" type="submit" id="newDirect" value="To selected place!" />
+    </div>
+
+    <div class="ui-state-error ui-corner-all" style="padding: 0 .3em;" id="alertGroup">
+        <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+            <span id="alertMessage">TEST</span></p>
+    </div>
+
+    <div class="googleFrame">
+        <div id="map-canvas"></div>
+        <div id="directionsPanel">
+            <span id="dirSelected"></span>
+        </div>
+    </div>
+
+
+</body>
+</html>
