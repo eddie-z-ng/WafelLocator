@@ -323,6 +323,7 @@ var PlotterModule = {
         this.directionsService.route(request, function (response, status) {
             if (status == google.maps.DirectionsStatus.OK) {
                 //console.log(response);
+                $.publish("gotDirections");
                 PlotterModule.directionsDisplay.setDirections(response);
                 // If we have selected a marker, extend the map to cover it
                 if (PlotterModule.currentBounds) {
@@ -418,8 +419,10 @@ var PlotterModule = {
         var selectedMarkerIndex = placesArray[selectedIndex].markerIndex;
         var placeName = placesArray[selectedIndex].get_name();
         var placeHours = placesArray[selectedIndex].get_hours();
-        $('#infoBlock').html('<div style="margin-left:12px;margin-top: -32px;"><br><br><font style="font-family: WhitneyB; color: #c4a065; font-size: 18px; font-weight: 100;"><b>' + placeName + '</b></font><br><font style="font-family:Whitney-Book; font-size: 14px; color: #173641;">' + placeHours + '</font></div>');
+        var placeAddress = placesArray[selectedIndex].get_address();
 
+        //$('#infoBlock').html('<div style="margin-left:12px;margin-top: -32px;"><br><br><font style="font-family: WhitneyB; color: #c4a065; font-size: 18px; font-weight: 100;"><b>' + placeName + '</b></font><br><font style="font-family:Whitney-Book; font-size: 14px; color: #173641;">' + placeHours + '</font></div>');
+        $('#infoBlock').html('<strong>' + placeName + '</strong><br>' + placeAddress + '<br>' + placeHours )
         //console.log("Selected marker index: " + selectedMarkerIndex);
         if (selectedMarkerIndex || selectedMarkerIndex === 0) {
             var selectedMarker = this.markerArray[selectedMarkerIndex];
@@ -465,9 +468,6 @@ var PlotterModule = {
 $(function () {
     console.log('Loaded and supports storage is ' + WaffleLocatorModule.supports_html5_storage());
 
-    $('input[type=submit]').button();
-    $('input[type=button]').button();
-
     if (navigator.geolocation) {
         $('#currentLocator').click(function() {
             $('#alertGroup').hide();
@@ -498,44 +498,35 @@ $(function () {
         $('#currentLocator').hide();
     }
 
-    // Datepicker
-    $('#date').datepicker({
-        dateFormat: 'MM d, yy',
-        inline: true,
-        altField: '#datepicker_value',
-        onSelect: function(){
-            var day1 = $("#date").datepicker('getDate').getDate();
-            var month1 = $("#date").datepicker('getDate').getMonth() + 1;
-            var year1 = $("#date").datepicker('getDate').getFullYear();
-            var fullDate = year1 + "-" + month1 + "-" + day1;
-        }
-    });
-
-    // Morning/Evening selector
-    $('#timeSelect').buttonset();
-
-    // Extra options
-    var $optToggle = $('#optionsToggle');
-    var $optToggleFrame = $('#selectFrame');
-    $optToggleFrame.hide();
-    $optToggle.click(function() {
-      if ($optToggleFrame.css('display') !== 'none') {
-           $optToggle.val("Show More Options");
-       }
-       else {
-           $optToggle.val("Hide Options");
-       }
-       $optToggleFrame.toggle(500);
-    });
-
     // Alert messages
     $('#alertGroup').hide();
+    //$('#progBar').hide();
+
+    // Directions button
+    $('#showDirections').hide();
+
+    $('.selectpicker').selectpicker();
+
+    var nowTemp = new Date();
+    var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+
+    var dp = $('#dp3').datepicker({format: 'mm-dd-yyyy'}).data('datepicker');
+    dp.setValue(nowTemp);
+
+   /* var fullDate = now.getMonth() + "-" + now.getDay() + "-" + now.getFullYear();
+    console.log(now);
+    WaffleLocatorModule.dateString = fullDate;       */
 
     PlotterModule.initialize();
     $.subscribe("dataParsed", function(event) {
         //console.log("EVENT CAUGHT");
+        var locButton = $(document.getElementById('finder'));
+        locButton.button('reset');
+
+        $('#progBar').hide();
+
         var locations = Array.prototype.slice.call(arguments, 1);
-        //console.log(locations);
+
         PlotterModule.showAllTruckMarkers(locations);
         PlotterModule.updateSelectedPlaceInfo(0, WaffleLocatorModule.allPlacesArray);
 
@@ -556,6 +547,28 @@ $(function () {
                 PlotterModule.destinationIndices.push(idx);
             }
         }
+
+        $('#locationsStatus').text("Locations Up-to-Date").removeClass("label-warning").addClass("label label-success");
+    });
+
+    $.subscribe("gotDirections", function(event) {
+        $('#progBar').hide();
+        $('#showDirections').show();
+
+        var toClosestButton = $(document.getElementById('direct'));
+        toClosestButton.button('reset');
+
+        var toSelectedButton = $(document.getElementById('newDirect'));
+        toSelectedButton.button('reset');
+    });
+
+    $.subscribe("newDirectionsRequest", function(event) {
+        // Publish this event when looking for new directions
+        // This allows one central place to update (hide) the UI
+        $('#showDirections').hide();
+        $('#alertGroup').hide();
+
+        $('#progBar').show();
     });
 
     $('#cartSelect').change(function () {
@@ -584,25 +597,33 @@ $(function () {
 
     // POST wdData version... in this case, do get results, but don't save
     $('#finder').click(function () {
-        var day1 = $("#date").datepicker('getDate').getDate();
-        var month1 = $("#date").datepicker('getDate').getMonth() + 1;
-        var year1 = $("#date").datepicker('getDate').getFullYear();
-        var fullDate = month1 + "/" + day1 + "/" + year1;
+        var dateString = $('#dateValue').val();
+        var dateSplit = dateString.split("-");
+        var day1 = dateSplit[1];
+        var month1 = dateSplit[0];
+        var year1 = dateSplit[2];
+        var fullDate = month1 + "-" + day1 + "-" + year1;
 
         //console.log("The selected day is..." + fullDate);
 
-        var selectedTime = $('#timeSelect [name="time"]:checked').index();
+        //var selectedTime = $('#timeSelect [name="time"]:checked').index();
+        var selectedTime = $('#timeSelect .active').val();
+        selectedTime = parseInt(selectedTime);
         if (selectedTime) {
             selectedTime = "<5"; // evening
         }
         else
         {
-            selectedTime = "5";
+            selectedTime = "5";  // morning
         }
         //console.log("Selected radio button is" + selectedTime);
 
+        $(this).button('loading');
+        $('#progBar').show();
+
         WaffleLocatorModule.dateString = fullDate;
         WaffleLocatorModule.postWDData(fullDate, selectedTime);
+        $('#locationsStatus').text("Locations Outdated").removeClass("label-success").addClass("label label-warning");
     });
 
     $('#newDirect').click(function () {
@@ -612,14 +633,15 @@ $(function () {
             $('#alertGroup').show();
             return this;
         }
-        $('#alertGroup').hide();
+
+        $.publish("newDirectionsRequest");
+        $(this).button('loading');
 
         var selectVal = $('#cartSelect :selected').val();
         var destination = WaffleLocatorModule.allPlacesArray[selectVal].get_address();
 
         //console.log("Destination is " + destination);
         if (destination) {
-            $('#alertGroup').hide();
             if (!$('#endLocation').val()) {
                 $('#endLocation').val(destination);
             }
@@ -643,7 +665,8 @@ $(function () {
             travelModeDir = google.maps.TravelMode.TRANSIT;
         }
         PlotterModule.calcRoute(origin1, destination, travelModeDir);
-        $('#dirSelected').text(travelModeText + " directions to " + WaffleLocatorModule.allPlacesArray[selectVal].get_name());
+        //$('#dirSelected').text(travelModeText + " directions to " + WaffleLocatorModule.allPlacesArray[selectVal].get_name());
+        $('#myModalLabel').text(WaffleLocatorModule.allPlacesArray[selectVal].get_name() + ": " + travelModeText);
     });
 
     $('#direct').click(function () {
@@ -652,6 +675,9 @@ $(function () {
             origin1 = "535 E 72nd St, NY";
             $('#startLocation').val(origin1);
         }
+
+        $.publish("newDirectionsRequest");
+        $(this).button('loading');
 
         var destList = [];
         PlotterModule.destinationIndices = [];
@@ -706,6 +732,7 @@ $(function () {
         function callback(response, status, destinationIndices, travelModeDir) {
             if (status == google.maps.DistanceMatrixStatus.OK) {
                 //console.log(response);
+
                 var origins = response.originAddresses;
                 var destinations = response.destinationAddresses;
 
@@ -738,15 +765,16 @@ $(function () {
                         }
                     }
                 }
-                //console.log("Fastest route is [" + WaffleLocatorModule.allPlacesArray[leastDuration.placeIndex].get_name() + "] " + origins[0] + " to " + leastDuration.destination + " DISTANCE: " + leastDuration.distance.text + " DURATION: " + leastDuration.duration.text);
-                //console.log("Shortest route is [" + WaffleLocatorModule.allPlacesArray[leastDistance.placeIndex].get_name() + "] " + origins[0] + " to " + leastDistance.destination + " DISTANCE: " + leastDistance.distance.text + " DURATION: " + leastDistance.duration.text);
 
                 PlotterModule.updateSelectedPlaceInfo(leastDuration.placeIndex, WaffleLocatorModule.allPlacesArray);
                 PlotterModule.calcRoute(origins[0], leastDuration.destination, travelModeDir);
-                $('#alertGroup').hide();
-                $('#dirSelected').text(travelModeText + " directions to " + WaffleLocatorModule.allPlacesArray[leastDuration.placeIndex].get_name());
-                //WaffleLocatorModule.saveRoute(); // TODO: use local storage to save the origin and destination route 
-                //var image = new google.maps.MarkerImage('images/truck_icon.png
+
+                var closestButton = $(document.getElementById('direct'));
+                closestButton.button('reset');
+
+                //$('#dirSelected').text(travelModeText + " directions to " + WaffleLocatorModule.allPlacesArray[leastDuration.placeIndex].get_name());
+                $('#myModalLabel').text(WaffleLocatorModule.allPlacesArray[leastDuration.placeIndex].get_name() + ": " + travelModeText);
+                //WaffleLocatorModule.saveRoute(); // TODO: use local storage to save the origin and destination route
             }
         }
 

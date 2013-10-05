@@ -4,7 +4,14 @@ Wafel Locator
 Author:
 Eddie Ng
 
-Version 1.0 - 9/20/2013
+Version 1.1 - 10/05/2013
+================================================================================
+*Changed interface a lot and transitioned from jQuery-UI to Twitter Bootstrap
+
+
+Version 1.0 - 09/20/2013
+================================================================================
+*Working first version
 
 
 What is it?
@@ -42,12 +49,12 @@ fun and enjoyment.
 
 
 Possible todos:
--Minimize the network requests and data (e.g. remove the need for jQuery, 
+*Minimize the network requests and data (e.g. remove the need for jQuery, 
  jQuery UI, etc.)
--Make it more sleek and stylish for mobile
--Evaluate autocomplete Geocoding for start address (and add it if feasible)
--Cache more stuff in LocalStorage if possible
--Modularize the PlotterModule more, allowing for possible reuse in other
- mashups in the future
--Any number of user interface tweaks...
--Refactor, refactor, refactor
+*Make it more sleek and stylish for mobile
+*Evaluate autocomplete Geocoding for start address (and add it if feasible)
+*Cache more stuff in LocalStorage if possible
+*Modularize the PlotterModule more, allowing for possible reuse in other
+*mashups in the future
+*Any number of user interface tweaks...
+*Refactor, refactor, refactor

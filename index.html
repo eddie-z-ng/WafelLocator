@@ -1,72 +1,158 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Wafels and Dinges Locator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Wafel Locator</title>
-    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"></script>
-    <script type="text/javascript" src="js/wafflelocator.js"></script>
-    <link href="css/theme-jquery-ui.min.css" rel="stylesheet">
-    <link media="Screen" href="css/wafflelocator.css" type="text/css" rel="stylesheet" />
-    <link media="handheld, only screen and (max-width: 480px), only screen and (max-device-width: 480px)" href="css/mobile.css" type="text/css" rel="stylesheet" />
-</head>
-<body>
-    <h2>Wafels and Dinges Locator</h2>
-    <h4 id="locData">Locations for Today</h4>
+    <!-- Le styles -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+    <link href="css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="css/bootstrap-select.min.css" rel="stylesheet">
+    <link href="css/datepicker.css" rel="stylesheet">
+    <link href="css/custom.css" rel=stylesheet>
 
-    <div class="moreOptionsBlock">
-        <input type="button" id="optionsToggle" value="Show More Options" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="../assets/js/html5shiv.js"></script>
+    <![endif]-->
 
-        <div id="selectFrame">
-            <div id="date"><p>Selected Date: <input type="text" id="datepicker_value" readonly="true"/></p></div>
+  </head>
 
-            <div id="timeSelect">
-                <input type="radio" id="radio1" name="time" checked="checked"/><label for="radio1">Morning</label>
-                <input type="radio" id="radio2" name="time"/><label for="radio2">Evening</label>
+  <body>
+
+    <div id="wrap">
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">Wafel Locator</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#map-canvas">Map</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <h2>Wafels and Dinges Locator</h2>
+
+       <!-- <ul class="nav nav-tabs">
+            <li><a href="#home" data-toggle="tab">Home</a></li>
+            <li><a href="#map-canvas" data-toggle="tab">Map</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="home">NO</div>
+            <div class="tab-pane" id="map-canvas"></div>
+        </div>     -->
+
+        <div id="selectFrame" class="collapse">
+            <div class="input-append date" id="dp3" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
+                <span class="add-on"><i class="icon-calendar"></i></span>
+                <input class="span2" size="16" type="text" id="dateValue" readonly="">
             </div>
 
-            <input type="submit" id="finder" value="Get new locations"/>
-        </div>
-    </div>
+            <div id="timeSelect" class="btn-group" data-toggle="buttons-radio">
+                <button type="button" class="btn btn-mini btn-info active" value="0">Morning</button>
+                <button type="button" class="btn btn-mini btn-info" value="1">Evening</button>
+            </div>
 
-    <div class="cartBlock">
-        <select id="cartSelect"></select>
-        <span id="infoBlock"></span>
-    </div>
-    <input type="button" id="currentLocator" value="Get my current location" />
-    <div class="locBlock">
-        <input type="search" placeholder="Enter start address" id="startLocation" />
-        <input type="search" placeholder="Destination address" id="endLocation" readonly="true"/>
-    </div>
-    <div class="directionChooser">
-        <span>Get me</span>
-            <select id="travelSelect">
+            <button type="button" class="btn btn-primary" data-loading-text="Loading..." id="finder"><i class="icon-refresh"></i> Get New Locations</button>
+        </div>
+
+
+      <h4 id="locData">Locations for Today</h4>
+      <span id="locationsStatus" class="label">No locations retrieved</span>
+      <button type="button" class="btn btn-warning" data-toggle="collapse" data-target="#selectFrame"><i class="icon-wrench"></i> Options</button>
+
+        <div class="cartBlock">
+            <select id="cartSelect"></select>
+            <!--<span id="infoBlock"></span>  -->
+            <div id="infoBlock" class="well">
+
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div id="dirModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">Modal header</h3>
+            </div>
+            <div id="directionsPanel" class="modal-body">
+                <span id="dirSelected"></span>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            </div>
+        </div>
+
+        <button class="btn btn-small" type="button" id="currentLocator"><i class="icon-map-marker"></i> Use Current Location</button>
+
+        <div class="locBlock">
+            <input type="text" class="input-xlarge" placeholder="Enter start address" id="startLocation">
+            <input type="text" class="input-xlarge" placeholder="Destination address" id="endLocation" disabled>
+        </div>
+
+
+        <select id="travelSelect" class="selectpicker show-tick" data-style="btn-inverse">
+            <optgroup label="Mode of Transportation">
                 <option value="transit">Transit</option>
                 <option value="driving">Driving</option>
                 <option value="bicycling">Bicycling</option>
                 <option value="walking">Walking</option>
-            </select>
-        <span>directions</span>
+            </optgroup>
+        </select>
 
-        <input class="ui-button ui-widget ui-state-default ui-corner-all" type="submit" id="direct" value="To closest place!" />
-        <input class="ui-button ui-widget ui-state-default ui-corner-all" type="submit" id="newDirect" value="To selected place!" />
-    </div>
+        <button type="button" class="btn btn-primary" data-loading-text="Loading..." id="direct">Find Closest!</button>
+        <button type="button" class="btn btn-primary" data-loading-text="Loading..." id="newDirect">To Selected!</button>
 
-    <div class="ui-state-error ui-corner-all" style="padding: 0 .3em;" id="alertGroup">
-        <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
-            <span id="alertMessage">TEST</span></p>
-    </div>
+        <!-- Button to trigger modal -->
+        <a href="#dirModal" role="button" class="btn btn-success" data-toggle="modal" id="showDirections">Show Directions</a>
 
-    <div class="googleFrame">
+        <div id="progBar" class="progress progress-striped active">
+            <div class="bar" style="width: 100%;"></div>
+        </div>
+        <div id="alertGroup" class="alert alert-error">
+            <i class="icon-exclamation-sign"></i>
+            <strong><span id="alertMessage">TEST</span></strong>
+        </div>
+
         <div id="map-canvas"></div>
-        <div id="directionsPanel">
-            <span id="dirSelected"></span>
+
+    </div> <!-- /container -->
+    <div id="push"></div>
+    </div>
+
+    <div id="footer">
+        <div class="container">
+            <p class="muted credit">Go Get That Waffle!</p>
         </div>
     </div>
 
+    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"></script>
+    <script type="text/javascript" src="js/wafflelocator.js"></script>
 
-</body>
+  </body>
 </html>
