@@ -101,10 +101,12 @@ var WaffleLocatorModule = {
                 } else {
                     //console.log("Could not get waffle truck data (GET)!");
                     // use cached data if it exists
+					$.publish("dataGetFailed", "Today - bad results");
                 }
             } else {
                 //console.log("Could not get waffle truck data (GET-from YQL)!");
                 // use cached data if it exists
+				$.publish("dataGetFailed", "Today");
             }
         });
     },
@@ -118,7 +120,7 @@ var WaffleLocatorModule = {
             baseURL = "http://www.wafelsanddinges.com/trucks/searchtrucks.php",
             //selectedDate = "9/27/2013",
             //selectedTime = ">5",
-            selectedDate = selDate,
+            selectedDate = selDate.replace(/-/g, '/'),
             selectedTime = selTime,
             selectedTruck = 0,
             postData = "date=" + selectedDate + "&time=" + selectedTime + "&truck_id=" + selectedTruck,
@@ -150,10 +152,12 @@ var WaffleLocatorModule = {
                 } else {
                     //console.log("Could not get waffle truck data (POST)!");
                     // use cached data if it exists
+					var errorText = selectedDate + " - bad results";
+					$.publish("dataGetFailed", errorText);
                 }
             } else {
                 //console.log("Could not get waffle truck data (POST-from YQL)!");
-                // use cached data if it exists
+                $.publish("dataGetFailed", selectedDate);
             }
         });
     },
@@ -518,8 +522,8 @@ $(function () {
     WaffleLocatorModule.dateString = fullDate;       */
 
     PlotterModule.initialize();
-    $.subscribe("dataParsed", function(event) {
-        //console.log("EVENT CAUGHT");
+    $.subscribe("dataParsed", function(event, locationsT) {
+        //console.log(arguments);
         var locButton = $(document.getElementById('finder'));
         locButton.button('reset');
 
@@ -530,7 +534,6 @@ $(function () {
         PlotterModule.showAllTruckMarkers(locations);
         PlotterModule.updateSelectedPlaceInfo(0, WaffleLocatorModule.allPlacesArray);
 
-        //console.log(WaffleLocatorModule.dateString);
         if (WaffleLocatorModule.dateString) {
             $('#locData').text("LOCATIONS FOR " + WaffleLocatorModule.dateString);
         }
@@ -550,6 +553,18 @@ $(function () {
 
         $('#locationsStatus').text("Locations Up-to-Date").removeClass("label-warning").addClass("label label-success");
     });
+	
+	$.subscribe("dataGetFailed", function(event, args) {
+		//console.log(args);
+		var locButton = $(document.getElementById('finder'));
+        locButton.button('reset');
+
+        $('#progBar').hide();
+	    $('#locationsStatus').text("No Locations Found").removeClass("label-success").removeClass("label label-warning").addClass("label");
+		
+		$('#alertMessage').text("Failed to get Wafel Truck locations for " + args + "!");
+		$('#alertGroup').show();
+	});
 
     $.subscribe("gotDirections", function(event) {
         $('#progBar').hide();
