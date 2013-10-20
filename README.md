@@ -4,6 +4,8 @@ Wafel Locator
 Author:
 Eddie Ng
 
+See it at [Wafel Locator](http://linked82000.github.io/WafelLocator)
+
 Version 1.1 - 10/05/2013
 ================================================================================
 *Changed interface a lot and transitioned from jQuery-UI to Twitter Bootstrap
