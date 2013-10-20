@@ -766,13 +766,13 @@ $(function () {
 
                         //console.log("Destination: " + to + " -- Duration: " + duration + " -- Distance: " + distance);
 
-                        if (element.duration.value < leastDuration.duration.value) {
+                        if (element.duration.value <= leastDuration.duration.value) {
                             leastDuration.duration = element.duration;
                             leastDuration.distance = element.distance;
                             leastDuration.destination = to;
                             leastDuration.placeIndex = destinationIndices[j];
                         }
-                        if (element.distance.value < leastDistance.distance.value) {
+                        if (element.distance.value <= leastDistance.distance.value) {
                             leastDistance.distance = element.distance;
                             leastDistance.duration = element.duration;
                             leastDistance.destination = to;
