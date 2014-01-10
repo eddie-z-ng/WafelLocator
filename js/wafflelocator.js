@@ -5,6 +5,7 @@
 
 // This module concerns itself with the location data from Wafels and Dinges
 var WaffleLocatorModule = {
+    storage_id: "Waffle_Locator",
     allPlacesArray: [],
     // Constructs a waffle place object and adds it to allPlacesArray
     makeWafflePlace: function(spec) {
@@ -18,7 +19,6 @@ var WaffleLocatorModule = {
         that.get_hours = function () {
             return spec.hours || '';
         };
-        this.allPlacesArray.push(that);
         return that;
     },
 
@@ -36,47 +36,49 @@ var WaffleLocatorModule = {
         if (!this.supports_html5_storage() || !this.allPlacesArray.length) {
             return false;
         }
-        localStorage.clear();
-        localStorage["WaffleLocatorModule.numPlaces"] = this.allPlacesArray.length;
-        localStorage["WaffleLocatorModule.lastUpdate"] = new Date().toString();
-        for (counter = 0; counter < this.allPlacesArray.length; counter++) {
-            localStorage["WaffleLocatorModule.place." + counter + ".name"] = this.allPlacesArray[counter].get_name();
-            localStorage["WaffleLocatorModule.place." + counter + ".address"] = this.allPlacesArray[counter].get_address();
-            localStorage["WaffleLocatorModule.place." + counter + ".hours"] = this.allPlacesArray[counter].get_hours();
-        }
+
+        localStorage.removeItem(this.storage_id);
+
+        var wafelInfo = {
+          lastUpdate: new Date().toString(),
+          places: this.allPlacesArray.map(function(place) {
+              return {  
+                name: place.get_name(),
+                address:  place.get_address(),
+                hours:  place.get_hours()
+              };
+          })
+        };
+
+        localStorage.setItem(this.storage_id, JSON.stringify(wafelInfo));
         return true;
     },
 
     loadWaffleInfo: function loadWaffleInfo() {
-        if (!this.supports_html5_storage() || !localStorage["WaffleLocatorModule.lastUpdate"]) {
+        if (!this.supports_html5_storage() || !localStorage.getItem(this.storage_id)) {
             return false;
         }
-        var savedDate = new Date(Date.parse(localStorage["WaffleLocatorModule.lastUpdate"]));
+
+        var wafelInfo = JSON.parse(localStorage.getItem(this.storage_id));
+        var savedDate = new Date(wafelInfo.lastUpdate); 
         var currentDate = new Date();
         if ( (savedDate.getDate() !== currentDate.getDate()) || (savedDate.getHours() !== currentDate.getHours()) ) {
-        //if ((savedDate.getMinutes() !== currentDate.getMinutes())) {
             return false;
         }
 
         var index,
-            numPlaces = parseInt(localStorage["WaffleLocatorModule.numPlaces"], 10),
+            numPlaces = wafelInfo.places.length,
             placeName, placeAddress, placeHours,
             spec;
 
         // Clear our allPlacesArray
         this.allPlacesArray = [];
 
-        for (index = 0; index < numPlaces; index++) {
-            placeName = localStorage["WaffleLocatorModule.place." + index + ".name"];
-            placeAddress = localStorage["WaffleLocatorModule.place." + index + ".address"];
-            placeHours = localStorage["WaffleLocatorModule.place." + index + ".hours"];
-            spec = {
-                name: placeName,
-                address: placeAddress,
-                hours: placeHours
-            };
-            this.makeWafflePlace(spec);
-        }
+        var that = this;
+        this.allPlacesArray = wafelInfo.places.map(function(place) {
+            return that.makeWafflePlace(place);
+        });
+
         return this.allPlacesArray;
     },
 
@@ -206,7 +208,7 @@ var WaffleLocatorModule = {
                 };
 
                 //console.log(spec);
-                WaffleLocatorModule.makeWafflePlace(spec);
+                this.allPlacesArray.push(WaffleLocatorModule.makeWafflePlace(spec));
             }
         }
 };
